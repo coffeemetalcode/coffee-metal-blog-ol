@@ -1,0 +1,7 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "quotes": ["warn", "single"],
+    "no-console": "off"
+  }
+}
