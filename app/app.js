@@ -4,6 +4,10 @@ const https = require('https');
 const dotenv = require('dotenv');
 const { google } = require('googleapis');
 
+const mockBloggerResponse = require('./mocks/blogger');
+const links = require('./helpers/links');
+const { link } = require('fs');
+
 const app = express();
 dotenv.config();
 
@@ -19,6 +23,11 @@ const blogger = google.blogger({
 const params = {
   blogId: blog,
 };
+
+app.get('/mock', (req, res, next) => {
+  const linksResp = links.assembleLinksData(mockBloggerResponse.items);
+  res.send(linksResp);
+});
 
 app.get('/', (req, res, next) => {
   blogger.blogs.get(params, (err, data) => {
