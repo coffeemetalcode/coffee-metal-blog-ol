@@ -6,7 +6,6 @@ const { google } = require('googleapis');
 
 const mockBloggerResponse = require('./mocks/blogger');
 const links = require('./helpers/links');
-const { link } = require('fs');
 
 const app = express();
 dotenv.config();
@@ -24,7 +23,37 @@ const params = {
   blogId: blog,
 };
 
-app.get('/mock', (req, res, next) => {
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept',
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET',
+  );
+  next();
+});
+
+/* GET post links */
+app.get('/links', (req, res, next) => {
+  const url = `${baseURL}/posts${key}`;
+  https.get(url, (resp) => {
+    let posts = '';
+
+    resp.on('data', (chunk) => {
+      posts += chunk;
+    });
+
+    resp.on('end', () => {
+      const linksResp = links.assembleLinksData(JSON.parse(posts).items);
+      res.send(linksResp);
+    });
+  });
+});
+
+app.get('/mock/links', (req, res, next) => {
   const linksResp = links.assembleLinksData(mockBloggerResponse.items);
   res.send(linksResp);
 });
@@ -50,7 +79,6 @@ app.get('/', (req, res, next) => {
     res.send(posts);
   });
 }); */
-
 
 // app.use(bodyParser.json()); // <-- not currently using this
 
